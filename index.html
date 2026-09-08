@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNS Style Experiment</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #fafafa;
+      color: #262626;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #login-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 350px;
+      margin: 120px auto;
+      padding: 40px 30px;
+      background: white;
+      border: 1px solid #dbdbdb;
+      text-align: center;
+    }
+
+    .title {
+      margin: 0 0 28px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .login-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .login-input {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      padding: 12px 10px;
+      border: 1px solid #dbdbdb;
+      border-radius: 4px;
+      background: #fafafa;
+      font-size: 14px;
+      color: #262626;
+      pointer-events: auto;
+      user-select: auto;
+      -webkit-user-select: auto;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: #a8a8a8;
+      background: #ffffff;
+    }
+
+    .login-btn,
+    .submit-btn {
+      position: relative;
+      z-index: 20;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 20px;
+      background: #0095f6;
+      color: white;
+      font-weight: bold;
+    }
+
+    .login-btn {
+      margin-top: 6px;
+    }
+
+    /* 안내 지시문 화면 */
+    #instruction-container {
+      display: none;
+      width: 100%;
+      max-width: 520px;
+      margin: 60px auto;
+      padding: 36px 28px;
+      background: white;
+      border: 1px solid #dbdbdb;
+      border-radius: 4px;
+      line-height: 1.7;
+      font-size: 14px;
+      word-break: keep-all;
+    }
+
+    #instruction-container h2 {
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #instruction-container p {
+      margin: 0 0 14px;
+      color: #333;
+    }
+
+    #instruction-container ul {
+      margin: 8px 0 16px;
+      padding-left: 20px;
+      color: #444;
+    }
+
+    #instruction-container li {
+      margin-bottom: 4px;
+    }
+
+    .start-feed-btn {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      font-size: 15px;
+    }
+
+    #experiment-container {
+      display: none;
+      width: 100%;
+      max-width: 470px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: 75px;
+      background: white;
+      border-left: 1px solid #dbdbdb;
+      border-right: 1px solid #dbdbdb;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 15px;
+      border-bottom: 1px solid #dbdbdb;
+      background: white;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .post {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #dbdbdb;
+    }
+
+    .post-header {
+      padding: 12px 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .post-img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #efefef;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 15px;
+      padding: 10px;
+    }
+
+    .action-btn {
+      padding: 0;
+      border: 0;
+      background: none;
+      font-size: 22px;
+    }
+
+    .action-btn.liked {
+      color: #ed4956;
+    }
+
+    .post-body {
+      padding: 0 10px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .username {
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .hashtag {
+      color: #00376b;
+      text-decoration: none;
+      margin-right: 4px;
+    }
+
+    .more-btn {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: #8e8e8e;
+      font-size: 14px;
+      margin-left: 4px;
+    }
+
+    .more-btn:hover {
+      color: #262626;
+    }
+
+    .extra-tags {
+      display: none;
+    }
+
+    .footer-nav {
+      position: fixed;
+      bottom: 0;
+      width: min(100%, 470px);
+      padding: 12px;
+      border-top: 1px solid #dbdbdb;
+      background: white;
+      text-align: center;
+    }
+
+    #result-screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      padding: 60px 24px;
+      background: white;
+      text-align: center;
+    }
+
+    #result-screen h2 {
+      margin-bottom: 12px;
+    }
+
+    #status-message {
+      color: #666;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 참가자 번호 입력 화면 -->
+  <main id="login-container">
+    <h1 class="title">연구 과제 참여</h1>
+
+    <form id="login-form" class="login-form">
+      <input
+        id="participant-id"
+        class="login-input"
+        type="text"
+        placeholder="참가자 번호 입력"
+        autocomplete="off"
+        required
+      >
+
+      <button class="login-btn" type="submit">
+        다음
+      </button>
+    </form>
+  </main>
+
+  <!-- 2. 과제 안내 지시문 화면 -->
+  <main id="instruction-container">
+    <h2>과제 안내</h2>
+    <p>이제 당신과 비슷한 연령대의 일반적인 SNS 이용자가 사용하는 것으로 설정된 Instagram 형식의 피드를 보게 됩니다.</p>
+    <p>피드에는 여러 사람이 일상에서 공유한 사진과 글이 포함되어 있습니다. 게시물의 주제는 일상생활, 학업 또는 일, 취미, 건강관리, 인간관계, 생각과 가치관 등으로 다양할 수 있습니다.</p>
+    <p>화면을 위아래로 자유롭게 스크롤하면서 게시물을 살펴봐 주세요. 관심이 있거나 내용을 더 확인하고 싶은 게시물이 있다면, 해당 게시물의 “...더 보기” 버튼을 눌러 전체 내용을 볼 수 있습니다.</p>
+    <p>정답은 없으며, 모든 게시물을 반드시 자세히 볼 필요는 없습니다. 평소 SNS 피드를 볼 때처럼 본인이 원하는 방식으로 자유롭게 탐색해 주세요.</p>
+    
+    <p><strong>과제 진행 중에는 다음 행동이 자동으로 기록됩니다.</strong></p>
+    <ul>
+      <li>어떤 게시물이 화면에 제시되었는지</li>
+      <li>어떤 게시물을 자세히 보았는지</li>
+      <li>각 게시물을 탐색한 시간</li>
+    </ul>
+    
+    <p>이 기록은 연구 목적으로만 사용되며, 참여자 번호와 함께 익명으로 저장됩니다.</p>
+    <p>준비가 되면 아래 버튼을 눌러 피드 탐색을 시작해 주세요.</p>
+
+    <button id="start-feed-btn" class="submit-btn start-feed-btn" type="button">
+      피드 탐색 시작하기
+    </button>
+  </main>
+
+  <!-- 3. 실제 SNS 피드 화면 -->
+  <main id="experiment-container">
+    <header class="header">피드</header>
+
+    <section id="feed-container"></section>
+
+    <nav class="footer-nav">
+      <button id="finish-button" class="submit-btn" type="button">
+        실험 종료
+      </button>
+    </nav>
+  </main>
+
+  <!-- 4. 결과 및 저장 완료 화면 -->
+  <main id="result-screen">
+    <h2>실험이 완료되었습니다.</h2>
+    <p id="status-message">데이터를 저장 중입니다. 잠시만 기다려주세요...</p>
+  </main>
+
+  <script>
+    // ⚠️ 구글 Apps Script 배포 URL
+    const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx3UnRGbJ8-vJkBKDZvolVbq2L7MRVI8xufScJmkDb8nBpKnZkjDZL2OVqy-nDM7pINaw/exec";
+
+    let participantId = "";
+    let observer;
+
+    const trackingData = {};
+
+    // 🎯 images/ 경로를 모두 제거하고 파일명만 적용
+    const postsData = [
+      // 1. 능력 기반 비교 자극 (Ability-based)
+      {
+        id: "Guitar",
+        condition: "ability",
+        user: "lighthouse_xxx",
+        image: "guitar.jpg",
+        caption: "내 기타가 부드럽게 흐느끼는 동안 🎸",
+        firstTag: "#기타",
+        extraTags: ["#음악", "#작곡", "#연주"]
+      },
+      {
+        id: "Volleyball",
+        condition: "ability",
+        user: "lighthouse_xxx",
+        image: "volleyball.jpg",
+        caption: "성공적인 배구 경기! 🏐🏐😎",
+        firstTag: "#팀워크",
+        extraTags: ["#팀스피릿", "#스포츠", "#운동동기부여"]
+      },
+      {
+        id: "Arts1",
+        condition: "ability",
+        user: "lighthouse_xxx",
+        image: "arts1.jpg",
+        caption: "당신만의 세계를 그리세요 🎨✨",
+        firstTag: "#인스타아트",
+        extraTags: ["#크리에이티브", "#색감", "#드로잉"]
+      },
+      {
+        id: "Arts2",
+        condition: "ability",
+        user: "lighthouse_xxx",
+        image: "arts2.jpg",
+        caption: "창의력 부스팅 🖌️",
+        firstTag: "#크리에이티브",
+        extraTags: ["#영감", "#수채화", "#그림스타그램"]
+      },
+      {
+        id: "Run2",
+        condition: "ability",
+        user: "lighthouse_xxx",
+        image: "run2.jpg",
+        caption: "체력 유지하기! 😎💪",
+        firstTag: "#러닝",
+        extraTags: ["#달리기", "#러닝동기부여", "#러닝은나를행복하게해"]
+      },
+
+      // 2. 의견 기반 비교 자극 (Opinion-based)
+      {
+        id: "Demo",
+        condition: "opinion",
+        user: "lighthouse_xxx",
+        image: "demo.jpg",
+        caption: "억압에는 NO, 인권에는 YES!",
+        firstTag: "#시위",
+        extraTags: ["#인권", "#평화시위", "#목소리"]
+      },
+      {
+        id: "Soli",
+        condition: "opinion",
+        user: "lighthouse_xxx",
+        image: "soli.jpg",
+        caption: "연대를 보여줍시다! ☝️",
+        firstTag: "#함께하면강하다",
+        extraTags: ["#사회적연대", "#이웃돕기", "#나눔"]
+      },
+      {
+        id: "Slogan2",
+        condition: "opinion",
+        user: "lighthouse_xxx",
+        image: "slogan2.jpg",
+        caption: "나는 할 수 있다. 해야만 하는 일을 하고자 하기 때문이다.",
+        firstTag: "#오늘의영감",
+        extraTags: ["#철학", "#칸트", "#자아성찰"]
+      },
+      {
+        id: "Breakfast",
+        condition: "opinion",
+        user: "lighthouse_xxx",
+        image: "breakfast.jpg",
+        caption: "건강한 아침 식사! 😋",
+        firstTag: "#헬시푸드",
+        extraTags: ["#요거트볼", "#건강식단", "#아침식사", "#베리"]
+      },
+      {
+        id: "Charity",
+        condition: "opinion",
+        user: "lighthouse_xxx",
+        image: "charity.jpg",
+        caption: "성공적인 자선 행사 😊",
+        firstTag: "#사회적활동",
+        extraTags: ["#참여", "#자원봉사", "#나눔의기쁨"]
+      }
+    ];
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function buildFeed() {
+      const feedContainer = document.getElementById("feed-container");
+      feedContainer.innerHTML = "";
+
+      const randomizedPosts = shuffleArray(postsData);
+
+      randomizedPosts.forEach((post, index) => {
+        trackingData[post.id] = {
+          condition: post.condition,
+          presentationOrder: index + 1,
+          dwellTime: 0,
+          clickMore: false,
+          liked: false,
+          lastInView: null
+        };
+
+        const extraTagsHtml = post.extraTags
+          .map(tag => `<span class="hashtag">${tag}</span>`)
+          .join(" ");
+
+        const postElement = document.createElement("article");
+        postElement.className = "post";
+        postElement.dataset.id = post.id;
+
+        postElement.innerHTML = `
+          <div class="post-header">${post.user}</div>
+
+          <img
+            class="post-img"
+            src="${post.image}"
+            alt="${post.id} stimulus"
+            loading="lazy"
+          >
+
+          <div class="post-actions">
+            <button class="action-btn like-btn" type="button">♡</button>
+            <button class="action-btn" type="button">◯</button>
+          </div>
+
+          <div class="post-body">
+            <span class="username">${post.user}</span>
+            <span class="caption-text">${post.caption}</span>
+            <span class="hashtag">${post.firstTag}</span>
+            <button class="more-btn" type="button">...더 보기</button>
+            <span class="extra-tags">${extraTagsHtml}</span>
+          </div>
+        `;
+
+        const likeButton = postElement.querySelector(".like-btn");
+        likeButton.addEventListener("click", () => {
+          const isLiked = !trackingData[post.id].liked;
+          trackingData[post.id].liked = isLiked;
+
+          if (isLiked) {
+            likeButton.textContent = "♥";
+            likeButton.classList.add("liked");
+          } else {
+            likeButton.textContent = "♡";
+            likeButton.classList.remove("liked");
+          }
+        });
+
+        const moreButton = postElement.querySelector(".more-btn");
+        const extraTagsSpan = postElement.querySelector(".extra-tags");
+
+        moreButton.addEventListener("click", () => {
+          trackingData[post.id].clickMore = true;
+          moreButton.style.display = "none";
+          extraTagsSpan.style.display = "inline";
+        });
+
+        feedContainer.appendChild(postElement);
+      });
+    }
+
+    // 1. 참가자 번호 제출 -> 안내 화면 표시
+    document
+      .getElementById("login-form")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const input = document.getElementById("participant-id");
+        participantId = input.value.trim();
+
+        if (!participantId) {
+          input.focus();
+          return;
+        }
+
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("instruction-container").style.display = "block";
+      });
+
+    // 2. 안내 화면에서 '피드 탐색 시작하기' 클릭 -> 피드 생성 및 관측 시작
+    document
+      .getElementById("start-feed-btn")
+      .addEventListener("click", () => {
+        buildFeed();
+
+        document.getElementById("instruction-container").style.display = "none";
+        document.getElementById("experiment-container").style.display = "block";
+
+        startObserver();
+      });
+
+    function startObserver() {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const postId = entry.target.dataset.id;
+            const data = trackingData[postId];
+            const currentTime = performance.now();
+
+            if (entry.isIntersecting) {
+              data.lastInView = currentTime;
+            } else if (data.lastInView !== null) {
+              data.dwellTime += currentTime - data.lastInView;
+              data.lastInView = null;
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+
+      document.querySelectorAll(".post").forEach((post) => observer.observe(post));
+    }
+
+    function preparePayload() {
+      return Object.entries(trackingData).map(([postId, data]) => ({
+        participant_id: participantId,
+        presentation_order: data.presentationOrder,
+        post_id: postId,
+        condition: data.condition,
+        dwell_time_ms: Math.round(data.dwellTime),
+        dwell_time_sec: Number((data.dwellTime / 1000).toFixed(2)),
+        click_more: data.clickMore,
+        liked: data.liked
+      }));
+    }
+
+    document
+      .getElementById("finish-button")
+      .addEventListener("click", async () => {
+        const finishBtn = document.getElementById("finish-button");
+        finishBtn.disabled = true;
+        finishBtn.textContent = "저장 중...";
+
+        const currentTime = performance.now();
+        Object.values(trackingData).forEach((data) => {
+          if (data.lastInView !== null) {
+            data.dwellTime += currentTime - data.lastInView;
+            data.lastInView = null;
+          }
+        });
+
+        if (observer) {
+          observer.disconnect();
+        }
+
+        document.getElementById("experiment-container").style.display = "none";
+        document.getElementById("result-screen").style.display = "block";
+
+        const payload = preparePayload();
+
+        try {
+          await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          document.getElementById("status-message").innerHTML = 
+            "모든 응답이 안전하게 제출되었습니다.<br>참여해 주셔서 대단히 감사합니다. 창을 닫으셔도 좋습니다.";
+        } catch (error) {
+          console.error("Transmission error:", error);
+          document.getElementById("status-message").innerHTML = 
+            "데이터 전송 중 오류가 발생했습니다.<br>연구 담당자에게 문의해 주시기 바랍니다.";
+        }
+      });
+  </script>
+</body>
+</html>
